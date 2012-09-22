@@ -22,7 +22,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements
-		ActionBar.TabListener {
+		ActionBar.TabListener,
+		SubscriptionListFragment.OnSubscriptionSelectedListener {
+	private static final String LOG_TAG = ".ui.MainActivity";
+
+	private int currentSubscription = -1;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -81,16 +85,64 @@ public class MainActivity extends FragmentActivity implements
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
-		
-		Intent intent = new Intent();
-        intent.setClass(this, EpisodeListActivity.class);
-		startActivity(intent);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+		/*
+		 * PodrBackupHelper backupHelper = new PodrBackupHelper(
+		 * getApplicationContext());
+		 */
+
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			// app icon in action bar clicked; go home
+			intent = new Intent(this, MainActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			return true;
+			/*
+			 * case R.id.menu_newsubscription: intent = new Intent(this,
+			 * NewSubscriptionActivity.class);
+			 * intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			 * MainActivity.this.startActivity(intent); return true; case
+			 * R.id.menu_refresh: intent = new Intent(this,
+			 * UpdateService.class); startService(intent); return true; case
+			 * R.id.menu_export: backupHelper.backup(); return true; case
+			 * R.id.menu_import: backupHelper.restore(); return true; case
+			 * R.id.menu_about: intent = new Intent(this, AboutActivity.class);
+			 * startActivity(intent); return true; case R.id.menu_settings:
+			 * intent = new Intent(this, SettingsActivity.class);
+			 * startActivity(intent); return true;
+			 */
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	public void onSubscriptionSelected(int subId) {
+		/*
+		 * EpisodeListFragment episodeList = (EpisodeListFragment)
+		 * getSupportFragmentManager() .findFragmentById(R.id.frag_episodelist);
+		 * 
+		 * currentSubscription = subId;
+		 * 
+		 * if (episodeList == null || !episodeList.isInLayout()) {
+		 */
+		Intent intent = new Intent(getApplicationContext(),
+				EpisodeListActivity.class);
+		intent.putExtra("subId", subId);
+		startActivity(intent);
+		/*
+		 * } else { episodeList.update(currentSubscription); }
+		 */
 	}
 
 	@Override
@@ -139,9 +191,11 @@ public class MainActivity extends FragmentActivity implements
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
 			case 0:
-				return getString(R.string.title_activity_main_subscriptions).toUpperCase();
+				return getString(R.string.title_activity_main_subscriptions)
+						.toUpperCase();
 			case 1:
-				return getString(R.string.title_activity_main_downloads).toUpperCase();
+				return getString(R.string.title_activity_main_downloads)
+						.toUpperCase();
 			}
 			return null;
 		}

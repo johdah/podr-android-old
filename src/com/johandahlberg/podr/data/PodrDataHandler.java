@@ -199,6 +199,24 @@ public class PodrDataHandler {
 		return subscriptions;
 	}
 
+	public int getUnreadBySubscription(int subscriptionId) {
+		String[] mProjection = { BaseColumns._ID };
+		String mSelectionClause = PodrOpenHelper.EPISODE_COL_SUBSCRIPTIONID
+				+ " = ? AND " + PodrOpenHelper.EPISODE_COL_STATUS + " = ?";
+		String[] mSelectionArgs = new String[2];
+		mSelectionArgs[0] = String.valueOf(subscriptionId);
+		mSelectionArgs[1] = String.valueOf(Episode.STATUS_UNREAD);
+
+		// Does a query against the table and returns a Cursor object
+		Cursor mCursor = context.getContentResolver().query(
+				PodrContentProvider.EPISODE_CONTENT_URI, mProjection,
+				mSelectionClause, mSelectionArgs, null);
+		if (mCursor == null)
+			return 0;
+		else
+			return mCursor.getCount();
+	}
+
 	public boolean isSubscriptionUnique(String link) {
 		String[] mProjection = { BaseColumns._ID };
 
@@ -213,6 +231,28 @@ public class PodrDataHandler {
 		boolean count = (mCursor.getCount() > 0) ? false : true;
 		mCursor.close();
 		return count;
+	}
+	
+	public void setAutodownload(int subscriptionId, boolean flag) {
+		if (BuildConfig.DEBUG)
+			Log.d(LOG_TAG, "Update Autodownload flag on subscription: " + subscriptionId);
+
+		String mSelectionClause = BaseColumns._ID + " = ?";
+		String[] mSelectionArgs = { String.valueOf(subscriptionId) };
+
+		ContentValues mUpdateValues = new ContentValues();
+		int autodownloadFlag = (flag) ? 1 : 0;
+		mUpdateValues.put(PodrOpenHelper.SUBSCRIPTION_COL_AUTODOWNLOAD, autodownloadFlag);
+
+		int mRowsUpdated = context.getContentResolver().update(
+				PodrContentProvider.SUBSCRIPTION_CONTENT_URI,
+				mUpdateValues,
+				mSelectionClause,
+				mSelectionArgs
+				);
+
+		if (mRowsUpdated > 0 && BuildConfig.DEBUG)
+			Log.d(LOG_TAG, "Updated Autodownload flag on subscription: " + subscriptionId);
 	}
 
 	public void updateSubscription(Subscription subscription) {

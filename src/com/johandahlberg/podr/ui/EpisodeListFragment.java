@@ -94,4 +94,9 @@ public class EpisodeListFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+
+	public void update(int currentSubscription) {
+		// TODO Auto-generated method stub
+		
+	}
 }
