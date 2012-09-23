@@ -78,6 +78,8 @@ public class SubscriptionListFragment extends ListFragment implements
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		if (BuildConfig.DEBUG)
+			Log.d(LOG_TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 
 		dataHandler = new PodrDataHandler(getActivity());
@@ -93,6 +95,8 @@ public class SubscriptionListFragment extends ListFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		if (BuildConfig.DEBUG)
+			Log.d(LOG_TAG, "onCreateView()");
 		ViewGroup root = (ViewGroup) inflater.inflate(
 				R.layout.list_empty_container, container, false);
 		inflater.inflate(R.layout.list_loading,

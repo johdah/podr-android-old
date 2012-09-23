@@ -180,13 +180,15 @@ public class MainActivity extends FragmentActivity implements
 		public Fragment getItem(int i) {
 			Fragment fragment = null;
 			switch (i) {
-			case 1:
+			case 0:
 				fragment = new SubscriptionListFragment();
-			case 2:
+				break;
+			case 1:
 				fragment = new DummySectionFragment();
 				Bundle args = new Bundle();
 				args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
 				fragment.setArguments(args);
+				break;
 			}
 
 			return fragment;
