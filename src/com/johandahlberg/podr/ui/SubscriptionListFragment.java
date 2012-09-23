@@ -101,7 +101,6 @@ public class SubscriptionListFragment extends ListFragment implements
 				R.layout.list_empty_container, container, false);
 		inflater.inflate(R.layout.list_loading,
 				(ViewGroup) root.findViewById(android.R.id.empty), true);
-		root.setBackgroundColor(Color.WHITE);
 		ListView listView = (ListView) root.findViewById(android.R.id.list);
 		listView.setItemsCanFocus(true);
 		listView.setCacheColorHint(Color.WHITE);

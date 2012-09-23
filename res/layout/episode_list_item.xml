@@ -6,7 +6,7 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/subscription_title"
+        android:id="@+id/episode_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="8dip"
@@ -21,7 +21,7 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/subscription_newepisodes"
+            android:id="@+id/episode_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="12dip"
@@ -31,7 +31,7 @@
             android:textSize="12dip" />
 
         <TextView
-            android:id="@+id/subscription_autodownload"
+            android:id="@+id/episode_status"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="right"

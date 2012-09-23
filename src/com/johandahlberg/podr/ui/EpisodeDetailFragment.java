@@ -3,8 +3,11 @@ package com.johandahlberg.podr.ui;
 import com.johandahlberg.podr.R;
 import com.johandahlberg.podr.R.id;
 import com.johandahlberg.podr.R.layout;
+import com.johandahlberg.podr.data.Episode;
+import com.johandahlberg.podr.data.PodrDataHandler;
 import com.johandahlberg.podr.dummy.DummyContent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,8 +18,9 @@ import android.widget.TextView;
 public class EpisodeDetailFragment extends Fragment {
 
     public static final String ARG_ITEM_ID = "item_id";
-
-    DummyContent.DummyItem mItem;
+    int currentEpisode = -1;
+    Episode mItem;
+    PodrDataHandler dataHandler;
 
     public EpisodeDetailFragment() {
     }
@@ -24,9 +28,10 @@ public class EpisodeDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-        }
+    	dataHandler = new PodrDataHandler(getActivity());
+        Intent intent = getActivity().getIntent();
+		currentEpisode = intent.getIntExtra(ARG_ITEM_ID, -1);
+    	mItem = dataHandler.getEpisodeById(currentEpisode);
     }
 
     @Override
@@ -34,7 +39,7 @@ public class EpisodeDetailFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_episode_detail, container, false);
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.episode_detail)).setText(mItem.content);
+            ((TextView) rootView.findViewById(R.id.episode_detail)).setText(mItem.getTitle());
         }
         return rootView;
     }
