@@ -94,9 +94,13 @@ public class PodrOpenHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		if (BuildConfig.DEBUG)
 			Log.v(LOG_TAG, "onCreate()");
+
 		db.execSQL(SUBSCRIPTION_TABLE_CREATE);
 		db.execSQL(EPISODE_TABLE_CREATE);
 		db.execSQL(DOWNLOAD_TABLE_CREATE);
+
+		if (BuildConfig.DEBUG)
+			seedData(db);
 	}
 
 	@Override
@@ -118,5 +122,23 @@ public class PodrOpenHelper extends SQLiteOpenHelper {
 			db.execSQL("DROP TABLE IF EXISTS " + DOWNLOAD_TABLE_NAME);
 			onCreate(db);
 		}
+	}
+
+	private void seedData(SQLiteDatabase db) {
+		db.execSQL("INSERT INTO " + SUBSCRIPTION_TABLE_NAME + " ("
+				+ SUBSCRIPTION_COL_LINK + ")"
+				+ " VALUES ('http://sverigesradio.se/api/rss/pod/9946');");
+		db.execSQL("INSERT INTO " + SUBSCRIPTION_TABLE_NAME + " ("
+				+ SUBSCRIPTION_COL_LINK + ")"
+				+ " VALUES ('http://sverigesradio.se/api/rss/pod/7565');");
+		db.execSQL("INSERT INTO " + SUBSCRIPTION_TABLE_NAME + " ("
+				+ SUBSCRIPTION_COL_LINK + ")"
+				+ " VALUES ('http://sverigesradio.se/api/rss/pod/3951');");
+		db.execSQL("INSERT INTO " + SUBSCRIPTION_TABLE_NAME + " ("
+				+ SUBSCRIPTION_COL_LINK + ")"
+				+ " VALUES ('http://sverigesradio.se/api/rss/pod/3953');");
+		db.execSQL("INSERT INTO " + SUBSCRIPTION_TABLE_NAME + " ("
+				+ SUBSCRIPTION_COL_LINK + ")"
+				+ " VALUES ('http://www.npr.org/templates/rss/podlayer.php?id=129577422');");
 	}
 }

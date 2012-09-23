@@ -1,5 +1,7 @@
 package com.johandahlberg.podr.ui;
 
+import java.util.ArrayList;
+
 import com.johandahlberg.podr.R;
 
 import android.app.ActionBar;
@@ -8,10 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -108,11 +110,12 @@ public class MainActivity extends FragmentActivity implements
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
 			return true;
-			/*
-			 * case R.id.menu_newsubscription: intent = new Intent(this,
-			 * NewSubscriptionActivity.class);
-			 * intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			 * MainActivity.this.startActivity(intent); return true; case
+		case R.id.menu_newsubscription: 
+			intent = new Intent(this, NewSubscriptionActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			MainActivity.this.startActivity(intent); 
+			return true; 
+			/*case
 			 * R.id.menu_refresh: intent = new Intent(this,
 			 * UpdateService.class); startService(intent); return true; case
 			 * R.id.menu_export: backupHelper.backup(); return true; case
@@ -175,10 +178,17 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		public Fragment getItem(int i) {
-			Fragment fragment = new DummySectionFragment();
-			Bundle args = new Bundle();
-			args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
-			fragment.setArguments(args);
+			Fragment fragment = null;
+			switch (i) {
+			case 1:
+				fragment = new SubscriptionListFragment();
+			case 2:
+				fragment = new DummySectionFragment();
+				Bundle args = new Bundle();
+				args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
+				fragment.setArguments(args);
+			}
+
 			return fragment;
 		}
 
