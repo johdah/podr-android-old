@@ -32,5 +32,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_episode_detail">Episode Detail</string>
     <string name="title_episode_list">Episodes</string>
+    <string name="title_newsubscription">New Subscription</string>
 
 </resources>

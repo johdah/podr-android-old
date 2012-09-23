@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.johandahlberg.podr"
-    android:versionCode="1"
+    android:versionCode="2"
     android:versionName="0.1" >
 
     <uses-sdk
@@ -34,12 +34,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".EpisodeListActivity" />
         </activity>
+        <activity
+            android:name=".ui.NewSubscriptionActivity"
+            android:label="@string/title_newsubscription" >
+        </activity>
 
         <provider
             android:name=".data.PodrContentProvider"
             android:authorities="com.johandahlberg.podr.provider.PodrContentProvider"
             android:exported="false"
             android:multiprocess="true" />
+
+        <service
+            android:name=".net.UpdateService"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -3,6 +3,7 @@ package com.johandahlberg.podr.ui;
 import java.util.ArrayList;
 
 import com.johandahlberg.podr.R;
+import com.johandahlberg.podr.net.UpdateService;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
@@ -115,9 +116,11 @@ public class MainActivity extends FragmentActivity implements
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			MainActivity.this.startActivity(intent); 
 			return true; 
+		case R.id.menu_refresh: 
+			intent = new Intent(this, UpdateService.class); 
+			startService(intent); 
+			return true; 
 			/*case
-			 * R.id.menu_refresh: intent = new Intent(this,
-			 * UpdateService.class); startService(intent); return true; case
 			 * R.id.menu_export: backupHelper.backup(); return true; case
 			 * R.id.menu_import: backupHelper.restore(); return true; case
 			 * R.id.menu_about: intent = new Intent(this, AboutActivity.class);

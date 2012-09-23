@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.johandahlberg.podr.BuildConfig;
 import com.johandahlberg.podr.R;
@@ -35,7 +36,11 @@ public class NewSubscriptionActivity extends Activity {
 				try {
 					dataHandler.addSubscription(new Subscription(new URL(url)));
 				} catch (MalformedURLException e) {
-					Log.e(LOG_TAG, "onCreate() - failed to add subscription");
+					Log.e(LOG_TAG, "onCreate() - MalformedURLException");
+					Toast.makeText(
+							getApplicationContext().getApplicationContext(),
+							"Malformed URL",
+							Toast.LENGTH_SHORT).show();
 				}
 
 				finish();
