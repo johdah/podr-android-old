@@ -3,7 +3,7 @@
     <string name="app_copyright">© 2012</string>
     <string name="app_name">PodR</string>
     <string name="app_publisher">Johan Dahlberg</string>
-    <string name="app_version">0.1</string>
+    <string name="app_version">0.2</string>
     <string name="activity_newsubscription_info">All subscription info will be fetched from the feed in the next update.</string>
     <string name="activity_newsubscription_url_hint">Add the subscription url</string>
     <string name="all">All</string>

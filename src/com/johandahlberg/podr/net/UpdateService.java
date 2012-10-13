@@ -17,6 +17,7 @@ import com.johandahlberg.podr.data.PodrContentProvider;
 import com.johandahlberg.podr.data.PodrDataHandler;
 import com.johandahlberg.podr.data.PodrOpenHelper;
 import com.johandahlberg.podr.data.Subscription;
+import com.johandahlberg.podr.data.helpers.PodrEpisodeHelper;
 //import com.johandahlberg.podr.ui.SettingsActivity;
 
 import android.app.Service;
@@ -49,6 +50,7 @@ public class UpdateService extends Service {
 	// Handler that receives messages from the thread
 	private final class ServiceHandler extends Handler {
 		private PodrDataHandler dataHandler;
+		private PodrEpisodeHelper episodeHelper;
 
 		public ServiceHandler(Looper looper) {
 			super(looper);
@@ -62,6 +64,7 @@ public class UpdateService extends Service {
 			InputStream inputStream;
 			PodcastParser parser;
 			dataHandler = new PodrDataHandler(context);
+			episodeHelper = new PodrEpisodeHelper(context);
 
 			// TODO: Implement only on wifi check
 			/*boolean updateOnlyWifi = sharedPref.getBoolean(
@@ -113,7 +116,7 @@ public class UpdateService extends Service {
 
 						dataHandler.updateSubscription(subscription);
 						List<Episode> episodes = parser.getEpisodes();
-						dataHandler.addEpisodes(episodes);
+						episodeHelper.addEpisodes(episodes);
 						Subscription updatedSubscription = dataHandler.getSubscriptionById(subscription.get_id());
 						if(updatedSubscription != null && updatedSubscription.isAutoDownload()) {
 							int updatedEpisodeCount = 0;
@@ -124,9 +127,9 @@ public class UpdateService extends Service {
 									break;
 								}
 								
-								Episode updatedEpisode = dataHandler
+								Episode updatedEpisode = episodeHelper
 										.getEpisodeByGuid(episode.getGuid());
-								dataHandler.updateEpisodeStatus(updatedEpisode.get_id(), Episode.STATUS_DOWNLOADING);
+								episodeHelper.updateEpisodeStatus(updatedEpisode.get_id(), Episode.STATUS_DOWNLOADING);
 								dataHandler.addDownload(new Download(-1, updatedEpisode.get_id(), updatedEpisode.getEnclosure()));
 							}
 						}
@@ -179,7 +182,7 @@ public class UpdateService extends Service {
 
 			for (Download download : downloads) {
 				if (download.getId() == -1) {
-					dataHandler.updateEpisodeStatus(download.getEpisodeId(),
+					episodeHelper.updateEpisodeStatus(download.getEpisodeId(),
 							Episode.STATUS_READ);
 					continue;
 				}
@@ -187,7 +190,7 @@ public class UpdateService extends Service {
 				URI fileUri = download.getFile();
 				File file = new File(fileUri);
 				if (!file.exists()) {
-					dataHandler.updateEpisodeStatus(download.getEpisodeId(),
+					episodeHelper.updateEpisodeStatus(download.getEpisodeId(),
 							Episode.STATUS_READ);
 					dataHandler.deleteDownload(download.getId());
 				}

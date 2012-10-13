@@ -15,7 +15,7 @@ import com.johandahlberg.podr.data.Episode;
 import com.johandahlberg.podr.data.PodrContentProvider;
 import com.johandahlberg.podr.data.PodrDataHandler;
 import com.johandahlberg.podr.data.PodrOpenHelper;
-import com.johandahlberg.podr.dummy.DummyContent;
+import com.johandahlberg.podr.data.helpers.PodrEpisodeHelper;
 import com.johandahlberg.podr.ui.widget.SimpleSectionedListAdapter;
 import com.johandahlberg.podr.utils.Utils;
 
@@ -51,6 +51,7 @@ public class EpisodeListFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 	private static final String LOG_TAG = ".ui.EpisodeListFragment";
 	private PodrDataHandler dataHandler;
+	private PodrEpisodeHelper episodeHelper;
 	private static final int MARK_EPISODE_READ_ID = 0;
 	private static final int MARK_EPISODE_UNREAD_ID = 1;
 	private static final int MARK_EPISODE_DOWNLOADING = 2;
@@ -113,6 +114,7 @@ public class EpisodeListFragment extends ListFragment implements
 		super.onCreate(savedInstanceState);
 
 		dataHandler = new PodrDataHandler(getActivity());
+		episodeHelper = new PodrEpisodeHelper(getActivity());
 		mEpisodeAdapter = new EpisodeAdapter(getActivity());
 		mAdapter = new SimpleSectionedListAdapter(getActivity(),
 				R.layout.episode_list_header, mEpisodeAdapter);
@@ -129,7 +131,7 @@ public class EpisodeListFragment extends ListFragment implements
 		super.onCreateContextMenu(menu, v, menuInfo);
 		// only display the action appropiate for the items current state
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-		Episode currentEpisode = dataHandler.getEpisodeById((int) info.id);
+		Episode currentEpisode = episodeHelper.getEpisodeById((int) info.id);
 
 		if (currentEpisode.getStatus() == 0) {
 			menu.add(0, MARK_EPISODE_READ_ID, 0, R.string.menu_markread);
@@ -160,7 +162,7 @@ public class EpisodeListFragment extends ListFragment implements
 
 		switch (item.getItemId()) {
 		case MARK_EPISODE_DOWNLOADING:
-			Episode episode = dataHandler.getEpisodeById((int) info.id);
+			Episode episode = episodeHelper.getEpisodeById((int) info.id);
 			dataHandler.addDownload(new Download(-1, episode.get_id(), episode
 					.getEnclosure()));
 			// TODO: Should not be static text
@@ -168,7 +170,7 @@ public class EpisodeListFragment extends ListFragment implements
 					"Marked for download", Toast.LENGTH_LONG).show();
 			return true;
 		case MARK_EPISODE_READ_ID: {
-			dataHandler.updateEpisodeStatus((int) info.id, Episode.STATUS_READ);
+			episodeHelper.updateEpisodeStatus((int) info.id, Episode.STATUS_READ);
 			// TODO: Should not be static text
 			Toast.makeText(getActivity().getApplicationContext(),
 					"Marked episode as read", Toast.LENGTH_LONG).show();
@@ -176,7 +178,7 @@ public class EpisodeListFragment extends ListFragment implements
 			return true;
 		}
 		case MARK_EPISODE_UNREAD_ID: {
-			dataHandler.updateEpisodeStatus((int) info.id,
+			episodeHelper.updateEpisodeStatus((int) info.id,
 					Episode.STATUS_UNREAD);
 			// TODO: Should not be static text
 			Toast.makeText(getActivity().getApplicationContext(),
@@ -195,7 +197,7 @@ public class EpisodeListFragment extends ListFragment implements
 
 			if (download != null)
 				dataHandler.deleteDownload(download.getId());
-			dataHandler.updateEpisodeStatus((int) info.id, Episode.STATUS_READ);
+			episodeHelper.updateEpisodeStatus((int) info.id, Episode.STATUS_READ);
 			return true;
 		}
 		case PLAY_EPISODE:

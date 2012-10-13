@@ -1,8 +1,34 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="?android:attr/textAppearanceLarge"
-    android:id="@+id/episode_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".ui.EpisodeDetailFragment" />
+    android:orientation="vertical"
+    tools:context=".ui.EpisodeDetailFragment" >
+
+    <TextView
+        android:id="@+id/episodedetails_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+    	android:padding="16dp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/episodedetails_pubDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp" />
+
+    <TextView
+        android:id="@+id/episodedetails_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp" />
+
+    <TextView
+        android:id="@+id/episodedetails_summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp" />
+
+</LinearLayout>

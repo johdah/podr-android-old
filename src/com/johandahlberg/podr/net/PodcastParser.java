@@ -18,12 +18,14 @@ import android.util.Xml;
 import com.johandahlberg.podr.data.Episode;
 import com.johandahlberg.podr.data.PodrDataHandler;
 import com.johandahlberg.podr.data.Subscription;
+import com.johandahlberg.podr.data.helpers.PodrEpisodeHelper;
 import com.johandahlberg.podr.utils.Utils;
 
 public class PodcastParser {
 	private static final String LOG_TAG = ".net.PodcastParser";
 	private static final String ns = null;
 	private PodrDataHandler dataHandler;
+	private PodrEpisodeHelper episodeHelper;
 	public Subscription subscription;
 	public List<Episode> episodes;
 
@@ -33,6 +35,7 @@ public class PodcastParser {
 		this.subscription = subscription;
 		episodes = new ArrayList<Episode>();
 		this.dataHandler = new PodrDataHandler(context);
+		this.episodeHelper = new PodrEpisodeHelper(context);
 	}
 
 	public void parse(InputStream in) throws IOException,
@@ -67,7 +70,7 @@ public class PodcastParser {
 			// Starts by looking for the entry tag
 			if (name.equals("item")) {
 				episode = readEpisode(parser);
-				if (dataHandler.isEpisodeUnique(episode.getGuid())) {
+				if (episodeHelper.isEpisodeUnique(episode.getGuid())) {
 					episodes.add(episode);
 				} else {
 					return;

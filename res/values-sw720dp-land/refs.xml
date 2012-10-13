@@ -1,3 +1,4 @@
+<!-- 10” tablet (720x1280, 800x1280, etc). -->
 <resources>
     <item type="layout" name="activity_episode_list">@layout/activity_episode_twopane</item>
 </resources>

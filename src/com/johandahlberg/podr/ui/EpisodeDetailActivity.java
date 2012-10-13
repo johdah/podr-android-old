@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class EpisodeDetailActivity extends FragmentActivity {
 
@@ -21,8 +23,8 @@ public class EpisodeDetailActivity extends FragmentActivity {
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            arguments.putString(EpisodeDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(EpisodeDetailFragment.ARG_ITEM_ID));
+            arguments.putInt(EpisodeDetailFragment.ARG_ITEM_ID,
+                    getIntent().getIntExtra(EpisodeDetailFragment.ARG_ITEM_ID, -1));
             EpisodeDetailFragment fragment = new EpisodeDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -31,13 +33,53 @@ public class EpisodeDetailActivity extends FragmentActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            NavUtils.navigateUpTo(this, new Intent(this, EpisodeListActivity.class));
-            return true;
-        }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_episodedetails, menu);
+		return true;
+	}
 
-        return super.onOptionsItemSelected(item);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+
+		switch (item.getItemId()) {
+		case android.R.id.home:
+	        if (item.getItemId() == android.R.id.home) {
+	            NavUtils.navigateUpTo(this, new Intent(this, EpisodeListActivity.class));
+	            return true;
+	        }
+			// app icon in action bar clicked; go home
+			/*intent = new Intent(this, MainActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);*/
+			return true;
+		/*case R.id.menu_play:
+			intent = new Intent(android.content.Intent.ACTION_VIEW);
+			Download download = dataHandler.getDownloadByEpisodeId(currentEpisode);
+			Uri uri = Uri.fromFile(new File(download.getFile()));
+			intent.setDataAndType(uri, "audio/mp3");
+
+			try {
+				startActivity(intent);
+			} catch (ActivityNotFoundException e) {
+				e.printStackTrace();
+			}
+			return true;*/
+		case R.id.menu_about:
+			/*intent = new Intent(this, AboutActivity.class);
+			startActivity(intent);*/
+			Toast.makeText(this.getApplicationContext(),
+					"Not yet implemented", Toast.LENGTH_LONG).show();
+			return true;
+		case R.id.menu_settings:
+			/*intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);*/
+			Toast.makeText(this.getApplicationContext(),
+					"Not yet implemented", Toast.LENGTH_LONG).show();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 }
