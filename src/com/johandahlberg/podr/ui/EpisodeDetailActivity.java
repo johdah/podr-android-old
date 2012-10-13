@@ -13,13 +13,15 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class EpisodeDetailActivity extends FragmentActivity {
-
+	private int currentSubscription = -1;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_episode_detail);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        currentSubscription = getIntent().getIntExtra(EpisodeListActivity.ARG_ITEM_ID, currentSubscription);
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
@@ -45,14 +47,13 @@ public class EpisodeDetailActivity extends FragmentActivity {
 
 		switch (item.getItemId()) {
 		case android.R.id.home:
+			// app icon in action bar clicked; go home
 	        if (item.getItemId() == android.R.id.home) {
-	            NavUtils.navigateUpTo(this, new Intent(this, EpisodeListActivity.class));
+	        	intent = new Intent(this, EpisodeListActivity.class);
+	        	intent.putExtra(EpisodeListActivity.ARG_ITEM_ID, currentSubscription);
+	            NavUtils.navigateUpTo(this, intent);
 	            return true;
 	        }
-			// app icon in action bar clicked; go home
-			/*intent = new Intent(this, MainActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);*/
 			return true;
 		/*case R.id.menu_play:
 			intent = new Intent(android.content.Intent.ACTION_VIEW);

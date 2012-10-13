@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener,
@@ -122,33 +123,29 @@ public class MainActivity extends FragmentActivity implements
 			return true; 
 			/*case
 			 * R.id.menu_export: backupHelper.backup(); return true; case
-			 * R.id.menu_import: backupHelper.restore(); return true; case
-			 * R.id.menu_about: intent = new Intent(this, AboutActivity.class);
-			 * startActivity(intent); return true; case R.id.menu_settings:
-			 * intent = new Intent(this, SettingsActivity.class);
-			 * startActivity(intent); return true;
-			 */
+			 * R.id.menu_import: backupHelper.restore(); return true;*/ 
+		case R.id.menu_about:
+			/*intent = new Intent(this, AboutActivity.class);
+			startActivity(intent);*/
+			Toast.makeText(this.getApplicationContext(),
+					"Not yet implemented", Toast.LENGTH_LONG).show();
+			return true;
+		case R.id.menu_settings:
+			/*intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);*/
+			Toast.makeText(this.getApplicationContext(),
+					"Not yet implemented", Toast.LENGTH_LONG).show();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
 	public void onSubscriptionSelected(int subId) {
-		/*
-		 * EpisodeListFragment episodeList = (EpisodeListFragment)
-		 * getSupportFragmentManager() .findFragmentById(R.id.frag_episodelist);
-		 * 
-		 * currentSubscription = subId;
-		 * 
-		 * if (episodeList == null || !episodeList.isInLayout()) {
-		 */
 		Intent intent = new Intent(getApplicationContext(),
 				EpisodeListActivity.class);
-		intent.putExtra("subId", subId);
+		intent.putExtra(EpisodeListActivity.ARG_ITEM_ID, subId);
 		startActivity(intent);
-		/*
-		 * } else { episodeList.update(currentSubscription); }
-		 */
 	}
 
 	@Override

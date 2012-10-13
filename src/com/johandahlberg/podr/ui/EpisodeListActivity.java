@@ -21,6 +21,7 @@ public class EpisodeListActivity extends FragmentActivity
 	private static final String LOG_TAG = ".ui.EpisodeListActivity";
 	private PodrDataHandler dataHandler;
 	private PodrEpisodeHelper episodeHelper;
+    public static final String ARG_ITEM_ID = "subscription_id";
 
     private boolean mTwoPane;
 	private int currentEpisode = -1;
@@ -33,8 +34,9 @@ public class EpisodeListActivity extends FragmentActivity
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_episode_list);
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 		Intent intent = getIntent();
-		currentSubscription = intent.getIntExtra("subId", -1);
+		currentSubscription = intent.getIntExtra(this.ARG_ITEM_ID, -1);
 		dataHandler = new PodrDataHandler(this);
 		episodeHelper = new PodrEpisodeHelper(this);
 
@@ -71,6 +73,7 @@ public class EpisodeListActivity extends FragmentActivity
         } else {
             Intent detailIntent = new Intent(this, EpisodeDetailActivity.class);
             detailIntent.putExtra(EpisodeDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(this.ARG_ITEM_ID, currentSubscription);
             startActivity(detailIntent);
         }
     }
@@ -82,9 +85,11 @@ public class EpisodeListActivity extends FragmentActivity
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// app icon in action bar clicked; go home
-			intent = new Intent(this, MainActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
+	        if (item.getItemId() == android.R.id.home) {
+	        	intent = new Intent(this, MainActivity.class);
+	            NavUtils.navigateUpTo(this, intent);
+	            return true;
+	        }
 			return true;
 		case R.id.menu_refresh:
 			intent = new Intent(this, UpdateService.class);

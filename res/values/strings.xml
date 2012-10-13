@@ -20,8 +20,8 @@
     <string name="menu_markallread">Mark all as read</string>
     <string name="menu_markallunread">Mark all as unread</string>
     <string name="menu_markdownloading">Download</string>
-    <string name="menu_markread">Mark as read</string>
-    <string name="menu_markunread">Mark as unread</string>
+    <string name="menu_markread">Read</string>
+    <string name="menu_markunread">Unread</string>
     <string name="menu_newsubscription">New subscription</string>
     <string name="menu_play">Play</string>
     <string name="menu_remove">Remove</string>
@@ -35,7 +35,7 @@
     <string name="subscription_no_new_episode">No new episodes</string>
     <string name="subscription_one_new_episode">1 new episode</string>
     <string name="subscription_x_new_episodes">new episodes</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">PodR</string>
     <string name="title_activity_main_downloads">Downloads</string>
     <string name="title_activity_main_subscriptions">Subscriptions</string>
     <string name="title_episode_detail">Episode Detail</string>
