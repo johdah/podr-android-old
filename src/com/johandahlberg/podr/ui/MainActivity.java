@@ -1,18 +1,14 @@
 package com.johandahlberg.podr.ui;
 
-import java.util.ArrayList;
-
 import com.johandahlberg.podr.R;
 import com.johandahlberg.podr.net.UpdateService;
 import com.johandahlberg.podr.utils.PodrBackupHelper;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -126,10 +122,8 @@ public class MainActivity extends FragmentActivity implements
 			backupHelper.restore();
 			return true; 
 		case R.id.menu_about:
-			/*intent = new Intent(this, AboutActivity.class);
-			startActivity(intent);*/
-			Toast.makeText(this.getApplicationContext(),
-					"Not yet implemented", Toast.LENGTH_LONG).show();
+			intent = new Intent(this, AboutActivity.class);
+			startActivity(intent);
 			return true;
 		case R.id.menu_settings:
 			/*intent = new Intent(this, SettingsActivity.class);

@@ -42,6 +42,7 @@
     <string name="subscription_no_new_episode">No new episodes</string>
     <string name="subscription_one_new_episode">1 new episode</string>
     <string name="subscription_x_new_episodes">new episodes</string>
+    <string name="title_about">About</string>
     <string name="title_activity_main">PodR</string>
     <string name="title_activity_main_downloads">Downloads</string>
     <string name="title_activity_main_subscriptions">Subscriptions</string>

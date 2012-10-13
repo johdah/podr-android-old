@@ -108,10 +108,8 @@ public class EpisodeListActivity extends FragmentActivity
 			}
 			return true;
 		case R.id.menu_about:
-			/*intent = new Intent(this, AboutActivity.class);
-			startActivity(intent);*/
-			Toast.makeText(this.getApplicationContext(),
-					"Not yet implemented", Toast.LENGTH_LONG).show();
+			intent = new Intent(this, AboutActivity.class);
+			startActivity(intent);
 			return true;
 		case R.id.menu_settings:
 			/*intent = new Intent(this, SettingsActivity.class);
