@@ -19,9 +19,9 @@ import android.widget.Toast;
 public class EpisodeListActivity extends FragmentActivity
         implements EpisodeListFragment.Callbacks {
 	private static final String LOG_TAG = ".ui.EpisodeListActivity";
+    public static final String ARG_ITEM_ID = "subscription_id";
 	private PodrDataHandler dataHandler;
 	private PodrEpisodeHelper episodeHelper;
-    public static final String ARG_ITEM_ID = "subscription_id";
 
     private boolean mTwoPane;
 	private int currentEpisode = -1;

@@ -26,6 +26,9 @@
         <activity
             android:name=".ui.EpisodeListActivity"
             android:label="@string/title_episode_list" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".ui.EpisodeDetailActivity"

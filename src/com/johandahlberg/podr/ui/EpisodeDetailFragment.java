@@ -55,6 +55,7 @@ public class EpisodeDetailFragment extends Fragment {
     	mItem = episodeHelper.getEpisodeById(currentEpisode);
     	
     	if (mItem != null && id > -1) {
+    		getActivity().getActionBar().setTitle(mItem.getTitle());
             TextView tvTitle = ((TextView) getActivity().findViewById(R.id.episodedetails_title));
             tvTitle.setText(mItem.getTitle());
             

@@ -55,8 +55,8 @@ public class EpisodeDetailActivity extends FragmentActivity {
 	            return true;
 	        }
 			return true;
-		/*case R.id.menu_play:
-			intent = new Intent(android.content.Intent.ACTION_VIEW);
+		case R.id.menu_play:
+			/*intent = new Intent(android.content.Intent.ACTION_VIEW);
 			Download download = dataHandler.getDownloadByEpisodeId(currentEpisode);
 			Uri uri = Uri.fromFile(new File(download.getFile()));
 			intent.setDataAndType(uri, "audio/mp3");
@@ -65,8 +65,10 @@ public class EpisodeDetailActivity extends FragmentActivity {
 				startActivity(intent);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-			}
-			return true;*/
+			}*/
+			Toast.makeText(this.getApplicationContext(),
+					"Not yet implemented", Toast.LENGTH_LONG).show();
+			return true;
 		case R.id.menu_about:
 			/*intent = new Intent(this, AboutActivity.class);
 			startActivity(intent);*/

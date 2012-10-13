@@ -203,7 +203,7 @@ public class EpisodeListFragment extends ListFragment implements
 			return true;
 		}
 		case PLAY_EPISODE:
-			Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
+			/*Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
 			Download download = dataHandler
 					.getDownloadByEpisodeId((int) info.id);
 			Uri uri = Uri.fromFile(new File(download.getFile()));
@@ -213,7 +213,9 @@ public class EpisodeListFragment extends ListFragment implements
 				startActivity(intent);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-			}
+			}*/
+			Toast.makeText(getActivity(),
+					"Not yet implemented", Toast.LENGTH_LONG).show();
 			return true;
 		}
 		return super.onContextItemSelected(item);
