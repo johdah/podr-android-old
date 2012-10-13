@@ -69,11 +69,9 @@ public class PodrEpisodeHelper {
 			mNewValues.put(PodrOpenHelper.EPISODE_COL_ITUNESSUMMARY,
 					episode.getItunesSummary());
 
-		// Uri mNewUri = context.getContentResolver().insert(
 		context.getContentResolver().insert(
-				PodrContentProvider.EPISODE_CONTENT_URI, // the user dictionary
-															// content URI
-				mNewValues // the values to insert
+				PodrContentProvider.EPISODE_CONTENT_URI,
+				mNewValues
 				);
 
 		if (BuildConfig.DEBUG)
@@ -382,10 +380,10 @@ public class PodrEpisodeHelper {
 		mUpdateValues.put(PodrOpenHelper.EPISODE_COL_STATUS, status);
 
 		int mRowsUpdated = context.getContentResolver().update(
-				PodrContentProvider.EPISODE_CONTENT_URI, // the user dictionary
-				mUpdateValues, // the columns to update
-				mSelectionClause, // the column to select on
-				mSelectionArgs // the value to compare to
+				PodrContentProvider.EPISODE_CONTENT_URI,
+				mUpdateValues,
+				mSelectionClause,
+				mSelectionArgs
 				);
 
 		if (mRowsUpdated > 0 && BuildConfig.DEBUG)
@@ -412,11 +410,10 @@ public class PodrEpisodeHelper {
 		mUpdateValues.put(PodrOpenHelper.EPISODE_COL_STATUS, status);
 
 		int mRowsUpdated = context.getContentResolver().update(
-				PodrContentProvider.EPISODE_CONTENT_URI, // the user dictionary
-															// content URI
-				mUpdateValues, // the columns to update
-				mSelectionClause, // the column to select on
-				mSelectionArgs // the value to compare to
+				PodrContentProvider.EPISODE_CONTENT_URI,
+				mUpdateValues,
+				mSelectionClause,
+				mSelectionArgs
 				);
 
 		if (mRowsUpdated > 0 && BuildConfig.DEBUG)

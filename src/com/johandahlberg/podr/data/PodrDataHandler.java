@@ -8,11 +8,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.johandahlberg.podr.BuildConfig;
 import com.johandahlberg.podr.data.helpers.PodrEpisodeHelper;
+import com.johandahlberg.podr.utils.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -282,16 +282,8 @@ public class PodrDataHandler {
 				if (mCursor.getString(5) != null)
 					newSubscription.setCopyright(mCursor.getString(5));
 
-				DateFormat dateParser = new SimpleDateFormat(
-						"E, dd MMM yyyy HH:mm:ss Z");
-				try {
-					String pubdate = mCursor.getString(6);
-					newSubscription.setLastUpdated(dateParser.parse(pubdate));
-				} catch (ParseException e) {
-					if (BuildConfig.DEBUG)
-						Log.e(LOG_TAG, "ParseException on subscription: "
-								+ newSubscription.get_id());
-				}
+				String pubdate = mCursor.getString(6);
+				newSubscription.setLastUpdated(Utils.parseDate(pubdate));
 
 				newSubscription.setAutoDownload(mCursor.getInt(7) == 1);
 				newSubscription.setItunesAuthor(mCursor.getString(8));
@@ -357,16 +349,8 @@ public class PodrDataHandler {
 				if (mCursor.getString(5) != null)
 					newSubscription.setCopyright(mCursor.getString(5));
 
-				DateFormat dateParser = new SimpleDateFormat(
-						"E, dd MMM yyyy HH:mm:ss Z");
-				try {
-					String pubdate = mCursor.getString(6);
-					newSubscription.setLastUpdated(dateParser.parse(pubdate));
-				} catch (ParseException e) {
-					if (BuildConfig.DEBUG)
-						Log.e(LOG_TAG, "ParseException on subscription: "
-								+ newSubscription.get_id());
-				}
+				String pubdate = mCursor.getString(6);
+				newSubscription.setLastUpdated(Utils.parseDate(pubdate));
 
 				newSubscription.setAutoDownload(mCursor.getInt(7) == 1);
 				newSubscription.setItunesAuthor(mCursor.getString(8));
@@ -475,12 +459,9 @@ public class PodrDataHandler {
 					.getUrl().toString());
 
 		int mRowsUpdated = context.getContentResolver().update(
-				PodrContentProvider.DOWNLOAD_CONTENT_URI, mUpdateValues, // the
-																			// columns
-																			// to
-																			// update
-				mSelectionClause, // the column to select on
-				mSelectionArgs // the value to compare to
+				PodrContentProvider.DOWNLOAD_CONTENT_URI, mUpdateValues,
+				mSelectionClause,
+				mSelectionArgs
 				);
 
 		if (mRowsUpdated > 0 && BuildConfig.DEBUG)

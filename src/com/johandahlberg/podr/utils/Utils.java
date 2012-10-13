@@ -20,10 +20,11 @@ public class Utils {
 		new String("EEE, d MMM yy HH:mm z"),
 		new String("EEE, d MMM yyyy HH:mm:ss z"),
 		new String("EEE, d MMM yyyy HH:mm z"),
+		new String("EEE MMM dd HH:mm:ss z yyyy"), // TODO: Sun Oct 14 01:07:08 CEST 2012
 		new String("d MMM yy HH:mm z"),
 		new String("d MMM yy HH:mm:ss z"),
 		new String("d MMM yyyy HH:mm z"),
-		new String("d MMM yyyy HH:mm:ss z"), };
+		new String("d MMM yyyy HH:mm:ss z") };
 
 	public static long getCurrentTime(final Context context) {
 		if (BuildConfig.DEBUG) {
@@ -46,13 +47,24 @@ public class Utils {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
     }
+	
+	public static Date parseDate(long input) {
+		return new Date(input * 1000);
+	}
 
 	public static Date parseDate(String input) {
 		Date date = null;
 		
 		try {
-			date = DateUtils.parseDate(input, dateFormats);
-		} catch (DateParseException e) {
+			Long number = Long.parseLong(input);
+			date = new Date(number * 1000);
+		} catch (NumberFormatException e1) {
+			try {
+				date = DateUtils.parseDate(input, dateFormats);
+			} catch (DateParseException e2) {
+				e2.printStackTrace();
+			}
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
