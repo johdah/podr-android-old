@@ -101,17 +101,9 @@ public class UpdateService extends Service {
 						try {
 							parser.parse(inputStream);
 						} catch (XmlPullParserException e) {
-							Toast.makeText(
-									context.getApplicationContext(),
-									"Parsing error on: "
-											+ subscription.getLink().toString(),
-									Toast.LENGTH_SHORT).show();
+							Log.e(LOG_TAG, "XmlPullParserException: " + e.toString());
 						} catch (IOException e) {
-							Toast.makeText(
-									context.getApplicationContext(),
-									"Unknown parsing error on: "
-											+ subscription.getLink().toString(),
-									Toast.LENGTH_SHORT).show();
+							Log.e(LOG_TAG, "IOException: " + e.toString());
 						}
 
 						dataHandler.updateSubscription(subscription);
@@ -136,10 +128,6 @@ public class UpdateService extends Service {
 
 						addedEpisodes += parser.getEpisodes().size();
 					}
-
-					// TODO: Fetch feed and update subscription info
-					// then add episodes (that was pub after the last update)
-					// to the DB
 				} while (c.moveToNext());
 
 				c.close();
@@ -168,10 +156,7 @@ public class UpdateService extends Service {
 				conn.connect();
 				return conn.getInputStream();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				Toast.makeText(context.getApplicationContext(),
-						"Unknown Exception on: " + url.toString(),
-						Toast.LENGTH_SHORT).show();
+				Log.e(LOG_TAG, "IOException: " + e.toString());
 				e.printStackTrace();
 				return null;
 			}
@@ -248,7 +233,7 @@ public class UpdateService extends Service {
 
 	@Override
 	public void onDestroy() {
-		// Shouldn't be static
+		// TODO: Fix non static notification message
 		String updateFinished = "No new episodes";
 		if (addedEpisodes == 1) {
 			updateFinished = "Found 1 new episode";

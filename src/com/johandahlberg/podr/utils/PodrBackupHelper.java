@@ -26,6 +26,7 @@ import android.util.Log;
 import android.util.Xml;
 import android.widget.Toast;
 
+import com.johandahlberg.podr.R;
 import com.johandahlberg.podr.data.PodrDataHandler;
 import com.johandahlberg.podr.data.Subscription;
 
@@ -52,16 +53,17 @@ public class PodrBackupHelper {
 			fw.write(generateXML());
 			fw.close();
 		} catch (FileNotFoundException e1) {
-			Log.e(LOG_TAG, "backup() - FileNotFoundException");
-			Toast.makeText(ctx, "Backup failed!", Toast.LENGTH_SHORT).show();
+			Log.e(LOG_TAG, "FileNotFoundException");
+			Toast.makeText(ctx, ctx.getString(R.string.backuphelper_backup_failed), Toast.LENGTH_SHORT).show();
 			return false;
 		} catch (IOException e) {
-			Log.e(LOG_TAG, "backup() - IOException");
-			Toast.makeText(ctx, "Backup failed!", Toast.LENGTH_SHORT).show();
+			Log.e(LOG_TAG, "IOException");
+			Toast.makeText(ctx, ctx.getString(R.string.backuphelper_backup_failed), Toast.LENGTH_SHORT).show();
 			return false;
 		}
 
-		Toast.makeText(ctx, "Backup succeeded!", Toast.LENGTH_SHORT).show();
+		Toast.makeText(ctx, ctx.getString(R.string.backuphelper_backup_succeeded).toString(), Toast.LENGTH_SHORT).show();
+		Log.v(LOG_TAG, "Backup succeeded!");
 		return true;
 	}
 
@@ -111,16 +113,18 @@ public class PodrBackupHelper {
 			reader = new BufferedInputStream(new FileInputStream(new File(
 					externalStorage, filename)));
 		} catch (FileNotFoundException e) {
-			Log.e(LOG_TAG, "restore() - FileNotFoundException");
-			Toast.makeText(ctx, "Restore failed!", Toast.LENGTH_SHORT).show();
+			Log.e(LOG_TAG, "FileNotFoundException: " + e.toString());
 		} finally {
 			if (reader != null) {
 				try {
-					if (parseXML(reader))
-						Toast.makeText(ctx, "Restore succeeded!", Toast.LENGTH_SHORT).show();
+					if (parseXML(reader)) {
+						Toast.makeText(ctx, ctx.getString(R.string.backuphelper_restore_succeeded).toString(), Toast.LENGTH_SHORT).show();
+						Log.v(LOG_TAG, "Restore succeeded!");
+					}
 					reader.close();
 					return true;
 				} catch (IOException e) {
+					Log.e(LOG_TAG, "XmlPullParserException: " + e.toString());
 					e.printStackTrace();
 				}
 			}
@@ -153,15 +157,11 @@ public class PodrBackupHelper {
 				}
 			}
 		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
+			Log.e(LOG_TAG, "XmlPullParserException: " + e.toString());
 			e.printStackTrace();
-			Toast.makeText(ctx, "XmlPullParserException!",
-					Toast.LENGTH_SHORT).show();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			Log.e(LOG_TAG, "IOException: " + e.toString());
 			e.printStackTrace();
-			Toast.makeText(ctx, "IOException!",
-					Toast.LENGTH_SHORT).show();
 		}
 
 		return false;

@@ -97,16 +97,14 @@ public class EpisodeListActivity extends FragmentActivity
 			return true;
 		case R.id.menu_markallread:
 			if(episodeHelper.updateAllEpisodeStatus(currentSubscription, Episode.STATUS_UNREAD, Episode.STATUS_READ)) {
-				// TODO: Should not be static text
 				Toast.makeText(this.getApplicationContext(),
-									"Marked all episodes as read", Toast.LENGTH_LONG).show();
+						getString(R.string.marked_all_read), Toast.LENGTH_LONG).show();
 			}
 			return true;
 		case R.id.menu_markallunread:
 			if(episodeHelper.updateAllEpisodeStatus(currentSubscription, Episode.STATUS_READ, Episode.STATUS_UNREAD)) {
-				// TODO: Should not be static text
 				Toast.makeText(this.getApplicationContext(),
-									"Marked all episodes as unread", Toast.LENGTH_LONG).show();
+									getString(R.string.marked_all_unread), Toast.LENGTH_LONG).show();
 			}
 			return true;
 		case R.id.menu_about:
