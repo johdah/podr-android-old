@@ -198,6 +198,7 @@ public class UpdateService extends Service {
 		}
 	}
 
+	// Called when started
 	@Override
 	public void onCreate() {
 		if (BuildConfig.DEBUG)
@@ -221,6 +222,7 @@ public class UpdateService extends Service {
 		mServiceHandler = new ServiceHandler(mServiceLooper);
 	}
 
+	// Called even if the service is already running
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// Shouldn't be static

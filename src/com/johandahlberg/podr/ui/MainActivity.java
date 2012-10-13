@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.johandahlberg.podr.R;
 import com.johandahlberg.podr.net.UpdateService;
+import com.johandahlberg.podr.utils.PodrBackupHelper;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
@@ -100,10 +101,7 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
-		/*
-		 * PodrBackupHelper backupHelper = new PodrBackupHelper(
-		 * getApplicationContext());
-		 */
+		PodrBackupHelper backupHelper = new PodrBackupHelper(getApplicationContext());
 
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -121,9 +119,12 @@ public class MainActivity extends FragmentActivity implements
 			intent = new Intent(this, UpdateService.class); 
 			startService(intent); 
 			return true; 
-			/*case
-			 * R.id.menu_export: backupHelper.backup(); return true; case
-			 * R.id.menu_import: backupHelper.restore(); return true;*/ 
+		case R.id.menu_export: 
+			backupHelper.backup();
+			return true; 
+		case R.id.menu_import:
+			backupHelper.restore();
+			return true; 
 		case R.id.menu_about:
 			/*intent = new Intent(this, AboutActivity.class);
 			startActivity(intent);*/
