@@ -1,10 +1,16 @@
 package com.johandahlberg.podr.ui;
 
+import java.io.File;
+
 import com.johandahlberg.podr.R;
 import com.johandahlberg.podr.R.id;
 import com.johandahlberg.podr.R.layout;
+import com.johandahlberg.podr.data.Download;
+import com.johandahlberg.podr.data.PodrDataHandler;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
@@ -13,6 +19,9 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class EpisodeDetailActivity extends FragmentActivity {
+	private static final String LOG_TAG = ".ui.EpisodeDetailActivity";
+	private PodrDataHandler dataHandler;
+	private int currentEpisode = -1;
 	private int currentSubscription = -1;
 	
     @Override
@@ -21,12 +30,13 @@ public class EpisodeDetailActivity extends FragmentActivity {
         setContentView(R.layout.activity_episode_detail);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        dataHandler = new PodrDataHandler(getApplicationContext());
+        currentEpisode = getIntent().getIntExtra(EpisodeDetailFragment.ARG_ITEM_ID, -1);
         currentSubscription = getIntent().getIntExtra(EpisodeListActivity.ARG_ITEM_ID, currentSubscription);
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            arguments.putInt(EpisodeDetailFragment.ARG_ITEM_ID,
-                    getIntent().getIntExtra(EpisodeDetailFragment.ARG_ITEM_ID, -1));
+            arguments.putInt(EpisodeDetailFragment.ARG_ITEM_ID, currentEpisode);
             EpisodeDetailFragment fragment = new EpisodeDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -56,7 +66,7 @@ public class EpisodeDetailActivity extends FragmentActivity {
 	        }
 			return true;
 		case R.id.menu_play:
-			/*intent = new Intent(android.content.Intent.ACTION_VIEW);
+			intent = new Intent(android.content.Intent.ACTION_VIEW);
 			Download download = dataHandler.getDownloadByEpisodeId(currentEpisode);
 			Uri uri = Uri.fromFile(new File(download.getFile()));
 			intent.setDataAndType(uri, "audio/mp3");
@@ -65,9 +75,7 @@ public class EpisodeDetailActivity extends FragmentActivity {
 				startActivity(intent);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-			}*/
-			Toast.makeText(this.getApplicationContext(),
-					"Not yet implemented", Toast.LENGTH_LONG).show();
+			}
 			return true;
 		case R.id.menu_about:
 			/*intent = new Intent(this, AboutActivity.class);
