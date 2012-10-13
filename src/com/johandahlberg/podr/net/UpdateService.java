@@ -138,9 +138,9 @@ public class UpdateService extends Service {
 
 			checkForDeletedFiles();
 
-			/*Intent intent = new Intent(getApplicationContext(),
+			Intent intent = new Intent(getApplicationContext(),
 					DownloadService.class);
-			startService(intent);*/
+			startService(intent);
 			stopSelf(msg.arg1);
 		}
 

@@ -1,0 +1,199 @@
+package com.johandahlberg.podr.net;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.johandahlberg.podr.data.Download;
+import com.johandahlberg.podr.data.Episode;
+import com.johandahlberg.podr.data.PodrDataHandler;
+import com.johandahlberg.podr.data.Subscription;
+import com.johandahlberg.podr.data.helpers.PodrEpisodeHelper;
+
+import android.app.IntentService;
+import android.app.NotificationManager;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Message;
+import android.os.Messenger;
+import android.util.Log;
+
+public class DownloadIntentService extends IntentService {
+	private static final String LOG_TAG = ".net.DownloadIntentService";
+	private NotificationManager notificationMgr = null;
+	private int id;
+	private int downloadId;
+	private int episodeId;
+	private String downloadProgress = "";
+	private PodrDataHandler dataHandler;
+	private PodrEpisodeHelper episodeHelper;
+	private final static String VALIDCHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 $%`-_@{}~!#().";
+
+	public DownloadIntentService() {
+		super("DownloadService");
+	}
+
+	// Will be called asynchronously be Android
+	@Override
+	protected void onHandleIntent(Intent intent) {
+		Bundle extras = intent.getExtras();
+		dataHandler = new PodrDataHandler(getApplicationContext());
+		episodeHelper = new PodrEpisodeHelper(getApplicationContext());
+		notificationMgr = (NotificationManager) getApplicationContext()
+				.getSystemService(NOTIFICATION_SERVICE);
+		this.downloadProgress = intent.getStringExtra("downloadProgress");
+		this.id = intent.getIntExtra("id", -1);
+		this.downloadId = intent.getIntExtra("downloadId", -1);
+		this.episodeId = intent.getIntExtra("episodeId", -1);
+		PodrDataHandler dataHandler = new PodrDataHandler(
+				getApplicationContext());
+		if (id == -1 || episodeId == -1)
+			stopSelf();
+
+		Download download = dataHandler.getDownloadById(downloadId);
+		Episode episode = episodeHelper.getEpisodeById(episodeId);
+		Subscription subscription = dataHandler.getSubscriptionById(episode
+				.getSubscriptionId());
+
+		File output = this.generateFilePath(episode);
+		if (output.exists()) {
+			output.delete();
+		}
+
+		InputStream stream = null;
+		FileOutputStream fos = null;
+		try {
+			URLConnection urlConn = download.getUrl().openConnection();
+			InputStream inputStream = urlConn.getInputStream();
+			fos = new FileOutputStream(output.getPath());
+			int totalDownloadSize = urlConn.getContentLength();
+			int downloaded = 0;
+
+			byte[] buffer = new byte[1024];
+			int bufferLength = 0;
+
+			int nextNotification = 0;
+
+			String contentTitle = downloadProgress + " "
+					+ subscription.getTitle();
+			/*notificationMgr.notify(
+					android.R.id.progress,
+					getSimple(contentTitle, episode.getTitle()).setProgress(
+							totalDownloadSize, 0, false).build());*/
+			
+			while ((bufferLength = inputStream.read(buffer)) > 0) {
+				fos.write(buffer, 0, bufferLength);
+				downloaded += bufferLength;
+
+				if (downloaded >= nextNotification) {
+					contentTitle = downloadProgress + " "
+							+ subscription.getTitle();
+					/*notificationMgr.notify(
+							android.R.id.progress,
+							getSimple(contentTitle, episode.getTitle())
+									.setProgress(totalDownloadSize, downloaded,
+											true).build());*/
+					nextNotification += totalDownloadSize / 100;
+				}
+			}
+
+			// Sucessful finished
+			download.setFile(output.toURI());
+			episodeHelper.updateEpisodeStatus(download.getEpisodeId(),
+					Episode.STATUS_DOWNLOADED);
+			dataHandler.updateDownload(download);
+			
+			// Shouldn't be static
+			/*notificationMgr.notify(
+					android.R.id.progress,
+					getSimple(
+							"Finished downloading episode " + downloadProgress,
+							"").build());*/
+		} catch (FileNotFoundException e) {
+			Log.e(LOG_TAG, "FileNotFoundException: " + e.toString());
+			e.printStackTrace();
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "Exception: " + e.toString());
+			e.printStackTrace();
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					Log.e(LOG_TAG, "IOException: " + e.toString());
+					e.printStackTrace();
+				}
+			}
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					Log.e(LOG_TAG, "IOException: " + e.toString());
+					e.printStackTrace();
+				}
+			}
+		}
+
+		if (extras != null) {
+			Messenger messenger = (Messenger) extras.get("MESSENGER");
+			Message msg = Message.obtain();
+			msg.arg1 = id;
+			msg.obj = output.getAbsolutePath();
+			try {
+				messenger.send(msg);
+			} catch (android.os.RemoteException e1) {
+				Log.w(LOG_TAG, "Exception sending message", e1);
+			}
+		}
+	}
+
+	public File generateFilePath(Episode episode) {
+		Subscription subscription = dataHandler.getSubscriptionById(episode
+				.getSubscriptionId());
+		// Trim is necessary since a directory can't end with spaces.
+		String folder = makeSafe(subscription.getTitle().trim());
+		String fileName = makeSafe(episode.getEnclosure().getFile());
+		String path = folder + "/" + fileName;
+
+		// the path needs converting to make sure it's a valid path name
+		Pattern p = Pattern.compile("[?><\\:*|^]");
+		Matcher m = p.matcher(path);
+		path = m.replaceAll("_");
+		File dir = new File(Environment.getExternalStorageDirectory(),
+				Environment.DIRECTORY_PODCASTS);
+		if (!new File(dir, folder).exists()) {
+			new File(dir, folder).mkdir();
+		}
+		return new File(dir, path);
+	}
+
+	private String makeSafe(String filename) {
+		StringBuilder fixedName = new StringBuilder();
+		for (int c = 0; c < filename.length(); c++) { // Make a valid name:
+			if (VALIDCHARS.indexOf(filename.charAt(c)) > -1) {
+				fixedName.append(filename.charAt(c));
+			}
+		}
+		return fixedName.toString();
+	}
+
+	/*private NotificationCompat2.Builder getSimple(CharSequence contentTitle,
+			CharSequence contentText) {
+		return new NotificationCompat2.Builder(this)
+				.setSmallIcon(R.drawable.ic_launcher).setTicker(contentTitle)
+				.setContentTitle(contentTitle).setContentText(contentText)
+		/* .setContentIntent(getPendingIntent()) *;
+	}*/
+
+	/*
+	 * private PendingIntent getPendingIntent() { Intent i = new Intent(this,
+	 * SampleActivity.class); i.setFlags(FLAG_ACTIVITY_CLEAR_TOP); return
+	 * PendingIntent.getActivity(this, 0, i, 0); }
+	 */
+}
