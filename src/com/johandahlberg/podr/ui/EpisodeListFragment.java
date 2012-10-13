@@ -129,29 +129,31 @@ public class EpisodeListFragment extends ListFragment implements
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		int menuCount = 0;
 		// only display the action appropiate for the items current state
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 		Episode currentEpisode = episodeHelper.getEpisodeById((int) info.id);
 
-		if (currentEpisode.getStatus() == 0) {
-			menu.add(0, MARK_EPISODE_READ_ID, 0, R.string.menu_markread);
-		} else {
-			menu.add(0, MARK_EPISODE_UNREAD_ID, 0, R.string.menu_markunread);
-		}
-
-		if (currentEpisode.getEnclosure() != null
-				&& currentEpisode.getStatus() != Episode.STATUS_DOWNLOADING
-				&& currentEpisode.getStatus() != Episode.STATUS_DOWNLOADED) {
-			menu.add(0, MARK_EPISODE_DOWNLOADING, 0,
-					R.string.menu_markdownloading);
-		}
-
 		if (currentEpisode.getStatus() == Episode.STATUS_DOWNLOADED) {
-			menu.add(0, PLAY_EPISODE, 0, R.string.menu_play);
+			menu.add(0, PLAY_EPISODE, menuCount++, R.string.menu_play);
 		}
-		if (currentEpisode.getStatus() == Episode.STATUS_DOWNLOADING
-				|| currentEpisode.getStatus() == Episode.STATUS_DOWNLOADED) {
-			menu.add(0, REMOVE_EPISODE, 0, R.string.menu_remove);
+		
+		if (currentEpisode.getStatus() == Episode.STATUS_UNREAD) {
+			menu.add(0, MARK_EPISODE_READ_ID, menuCount++, R.string.menu_markread);
+			if (currentEpisode.getEnclosure() != null) {
+				menu.add(0, MARK_EPISODE_DOWNLOADING, menuCount++,
+						R.string.menu_markdownloading);
+			}
+		} else if(currentEpisode.getStatus() == Episode.STATUS_READ) {
+			menu.add(0, MARK_EPISODE_UNREAD_ID, menuCount++, R.string.menu_markunread);
+			if (currentEpisode.getEnclosure() != null) {
+				menu.add(0, MARK_EPISODE_DOWNLOADING, menuCount++,
+						R.string.menu_markdownloading);
+			}
+		} else if (currentEpisode.getStatus() == Episode.STATUS_DOWNLOADING) {
+			menu.add(0, REMOVE_EPISODE, menuCount++, R.string.menu_remove);
+		} else if (currentEpisode.getStatus() == Episode.STATUS_DOWNLOADED) {
+			menu.add(0, REMOVE_EPISODE, menuCount++, R.string.menu_remove);
 		}
 	}
 
