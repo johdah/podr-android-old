@@ -59,7 +59,11 @@ public class EpisodeDetailActivity extends FragmentActivity {
 		case android.R.id.home:
 			// app icon in action bar clicked; go home
 	        if (item.getItemId() == android.R.id.home) {
-	        	intent = new Intent(this, EpisodeListActivity.class);
+	        	if(currentSubscription > -1) {
+		        	intent = new Intent(this, EpisodeListActivity.class);
+	        	} else {
+	        		intent = new Intent(this, MainActivity.class);
+	        	}
 	        	intent.putExtra(EpisodeListActivity.ARG_ITEM_ID, currentSubscription);
 	            NavUtils.navigateUpTo(this, intent);
 	            return true;

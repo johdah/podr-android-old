@@ -9,44 +9,4 @@
         <item name="android:textColor">#ff000000</item>
     </style>
 
-    <!-- Body content -->
-    <style name="TextHeader">
-        <item name="android:textSize">@dimen/text_size_xlarge</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/body_text_1</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:textIsSelectable">true</item>
-    </style>
-
-    <style name="TextHeaderSub">
-        <item name="android:textSize">@dimen/text_size_medium</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/body_text_2</item>
-        <item name="android:textIsSelectable">true</item>
-    </style>
-
-    <style name="TextHeader2">
-        <item name="android:textSize">@dimen/text_size_small</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/accent_1</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="android:background">@drawable/accent_bottom_border</item>
-    </style>
-
-    <style name="TextHeader3">
-        <item name="android:textSize">@dimen/text_size_medium</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/body_text_1</item>
-        <item name="android:textIsSelectable">true</item>
-    </style>
-
-    <style name="TextBody">
-        <item name="android:textSize">@dimen/text_size_medium</item>
-        <item name="android:lineSpacingMultiplier">1.1</item>
-        <item name="android:textColor">@color/body_text_1</item>
-        <item name="android:textIsSelectable">true</item>
-    </style>
-
 </resources>

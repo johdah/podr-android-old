@@ -1,34 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.EpisodeDetailFragment" >
+    android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/episodedetails_title"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/header_session"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-    	android:padding="16dp"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:paddingBottom="@dimen/content_padding_normal"
+        android:paddingLeft="@dimen/content_padding_normal"
+        android:paddingRight="@dimen/content_padding_normal"
+        android:paddingTop="@dimen/content_padding_normal" >
 
-    <TextView
-        android:id="@+id/episodedetails_pubDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp" />
+        <TextView
+            android:id="@+id/episodedetails_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="@dimen/content_padding_normal" />
 
-    <TextView
-        android:id="@+id/episodedetails_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp" />
+        <TextView
+            android:id="@+id/episodedetails_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/episodedetails_status"
+        	android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/episodedetails_pubDateAndDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/episodedetails_title"
+            android:layout_toLeftOf="@id/episodedetails_status" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/episodedetails_summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp" />
+        android:padding="@dimen/content_padding_normal" />
 
 </LinearLayout>

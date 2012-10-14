@@ -70,7 +70,6 @@ public class EpisodeListFragment extends ListFragment implements
 	private int mActivatedPosition = ListView.INVALID_POSITION;
 
 	public interface Callbacks {
-
 		public void onItemSelected(int i);
 	}
 

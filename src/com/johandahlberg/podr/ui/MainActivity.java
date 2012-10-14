@@ -19,11 +19,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.DownloadListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener,
+		DownloadListFragment.OnDownloadSelectedListener,
 		SubscriptionListFragment.OnSubscriptionSelectedListener {
 	private static final String LOG_TAG = ".ui.MainActivity";
 
@@ -92,6 +94,13 @@ public class MainActivity extends FragmentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
+	}
+
+	public void onDownloadSelected(int id) {
+        Intent detailIntent = new Intent(this, EpisodeDetailActivity.class);
+        detailIntent.putExtra(EpisodeDetailFragment.ARG_ITEM_ID, id);
+        detailIntent.putExtra(EpisodeListActivity.ARG_ITEM_ID, -1);
+        startActivity(detailIntent);
 	}
 
 	@Override
@@ -177,10 +186,7 @@ public class MainActivity extends FragmentActivity implements
 				fragment = new SubscriptionListFragment();
 				break;
 			case 1:
-				fragment = new DummySectionFragment();
-				Bundle args = new Bundle();
-				args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
-				fragment.setArguments(args);
+				fragment = new DownloadListFragment();
 				break;
 			}
 
@@ -203,27 +209,6 @@ public class MainActivity extends FragmentActivity implements
 						.toUpperCase();
 			}
 			return null;
-		}
-	}
-
-	/**
-	 * A dummy fragment representing a section of the app, but that simply
-	 * displays dummy text.
-	 */
-	public static class DummySectionFragment extends Fragment {
-		public DummySectionFragment() {
-		}
-
-		public static final String ARG_SECTION_NUMBER = "section_number";
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			TextView textView = new TextView(getActivity());
-			textView.setGravity(Gravity.CENTER);
-			Bundle args = getArguments();
-			textView.setText(Integer.toString(args.getInt(ARG_SECTION_NUMBER)));
-			return textView;
 		}
 	}
 }

@@ -59,12 +59,21 @@ public class EpisodeDetailFragment extends Fragment {
             TextView tvTitle = ((TextView) getActivity().findViewById(R.id.episodedetails_title));
             tvTitle.setText(mItem.getTitle());
             
-            TextView tvPubDate = (TextView) getActivity().findViewById(
-                    R.id.episodedetails_pubDate);
+            TextView tvPubDateAndDuration = (TextView) getActivity().findViewById(
+                    R.id.episodedetails_pubDateAndDuration);
 		    // TODO: Something wrong with the date
 		    DateFormat formatter = android.text.format.DateFormat
 		    .getDateFormat(getActivity().getApplicationContext());
-		    tvPubDate.setText(formatter.format(mItem.getPubDate()));
+		    String dateString = formatter.format(mItem.getPubDate());
+		    String duration = mItem.getItunesDuration();
+		    String pubDateAndDuration = "";
+		    if(dateString != null) {
+		    	pubDateAndDuration += dateString;
+		    }
+		    if(duration != null) {
+		    	pubDateAndDuration += duration;
+		    }
+		    tvPubDateAndDuration.setText(pubDateAndDuration);
 
             TextView tvStatus = (TextView) getActivity().findViewById(
                             R.id.episodedetails_status);
@@ -84,7 +93,7 @@ public class EpisodeDetailFragment extends Fragment {
                             R.id.episodedetails_summary);
             tvSummary.setText(mItem.getItunesSummary().toString());
         } else if(id == -1) {
-        	((TextView) getActivity().findViewById(R.id.episodedetails_title)).setText("Ingen podd är vald!");
+        	((TextView) getActivity().findViewById(R.id.episodedetails_title)).setText("Ingen podd ï¿½r vald!");
         }
     }
 }
