@@ -11,6 +11,7 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.johandahlberg.podr.BuildConfig;
+import com.johandahlberg.podr.R;
 import com.johandahlberg.podr.data.Download;
 import com.johandahlberg.podr.data.Episode;
 import com.johandahlberg.podr.data.PodrContentProvider;
@@ -20,6 +21,7 @@ import com.johandahlberg.podr.data.Subscription;
 import com.johandahlberg.podr.data.helpers.PodrEpisodeHelper;
 //import com.johandahlberg.podr.ui.SettingsActivity;
 
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -34,13 +36,15 @@ import android.os.Message;
 import android.os.Process;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 public class UpdateService extends Service {
 	private static final String LOG_TAG = ".net.UpdateService";
 
-	//private NotificationManager notificationMgr = null;
+	private NotificationManager mNotifyManager = null;
+	private NotificationCompat.Builder mBuilder = null;
 	private SharedPreferences sharedPref;
 	private Looper mServiceLooper;
 	private ServiceHandler mServiceHandler;
@@ -84,14 +88,14 @@ public class UpdateService extends Service {
 
 				// Loop through subscriptions
 				c.moveToFirst();
+				int count = 0;
 				do {
-					// Shouldn't be static
-					/*notificationMgr.notify(
-							android.R.id.progress,
-							getSimple(
-									"Update subscription ("
-											+ (c.getPosition() + 1) + "/"
-											+ c.getCount() + ")").build());*/
+					// Notification
+					mBuilder.setProgress(c.getCount(), count, false);
+					mBuilder.setContentText(getString(R.string.update_inprogress) + ": " + count + "/"
+							+ c.getCount());
+					mNotifyManager.notify(0, mBuilder.build());
+					
 					subscription = new Subscription(new URL(c.getString(1)));
 					subscription.set_id(c.getInt(0));
 
@@ -128,13 +132,16 @@ public class UpdateService extends Service {
 
 						addedEpisodes += parser.getEpisodes().size();
 					}
+					count++;
 				} while (c.moveToNext());
 
 				c.close();
-				// We are finished :D
 			} catch (Exception e) {
 
 			}
+			
+            mBuilder.setContentText(getString(R.string.update_completed)).setProgress(0,0,false);
+            mNotifyManager.notify(0, mBuilder.build());
 
 			checkForDeletedFiles();
 
@@ -198,8 +205,11 @@ public class UpdateService extends Service {
 
 		context = getApplicationContext();
 
-		/*notificationMgr = (NotificationManager) context.getApplicationContext()
-				.getSystemService(NOTIFICATION_SERVICE);*/
+		mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mBuilder = new NotificationCompat.Builder(this);
+		mBuilder.setContentTitle(getString(R.string.update_subscriptions))
+	    		.setContentText(getString(R.string.update_inprogress))
+    			.setSmallIcon(R.drawable.ic_launcher);
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Get the HandlerThread's Looper and use it for our Handler
@@ -210,10 +220,6 @@ public class UpdateService extends Service {
 	// Called even if the service is already running
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		// Shouldn't be static
-		/*notificationMgr.notify(android.R.id.progress,
-				getSimple("Updating subscriptions").build());*/
-
 		// For each start request, send a message to start a job and deliver the
 		// start ID so we know which request we're stopping when we finish the
 		// job
@@ -232,15 +238,5 @@ public class UpdateService extends Service {
 	}
 
 	@Override
-	public void onDestroy() {
-		// TODO: Fix non static notification message
-		String updateFinished = "No new episodes";
-		if (addedEpisodes == 1) {
-			updateFinished = "Found 1 new episode";
-		} else if (addedEpisodes > 1) {
-			updateFinished = "Found " + addedEpisodes + " new episodes";
-		}
-		/*notificationMgr.notify(android.R.id.progress,
-				getSimple("Update finished", updateFinished).build());*/
-	}
+	public void onDestroy() {}
 }

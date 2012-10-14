@@ -52,5 +52,8 @@
     <string name="unknown">Unknown</string>
     <string name="unknown_date">Unknown date</string>
     <string name="unread">Unread</string>
+    <string name="update_completed">Update completed</string>
+    <string name="update_inprogress">Update in progress</string>
+    <string name="update_subscriptions">Update Subscriptions</string>
 
 </resources>
