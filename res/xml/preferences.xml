@@ -1,0 +1,24 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory 
+        android:title="@string/pref_category_update_and_download"
+        android:key="pref_key_category_update_and_download">
+        <CheckBoxPreference
+            android:key="pref_key_update_only_wifi"
+            android:summary="@string/pref_summary_update_only_wifi"
+            android:title="@string/pref_title_update_only_wifi"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_key_download_only_wifi"
+            android:summary="@string/pref_summary_download_only_wifi"
+            android:title="@string/pref_title_download_only_wifi"
+            android:defaultValue="true" />
+        <ListPreference 
+            android:dialogTitle="@string/pref_title_autodownload_limit"
+            android:key="pref_key_autodownload_limit"
+            android:entries="@array/autodownload_limit_entries"
+            android:entryValues="@array/autodownload_limit_values"
+            android:summary="@string/pref_summary_autodownload_limit"
+            android:title="@string/pref_title_autodownload_limit"
+            android:defaultValue="5" />
+    </PreferenceCategory>
+</PreferenceScreen>

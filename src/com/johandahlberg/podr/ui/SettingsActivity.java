@@ -1,22 +1,19 @@
 package com.johandahlberg.podr.ui;
 
 import com.johandahlberg.podr.R;
-import com.johandahlberg.podr.data.Episode;
-import com.johandahlberg.podr.net.UpdateService;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-public class AboutActivity extends Activity {
+public class SettingsActivity extends PreferenceActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        setContentView(R.layout.activity_about);
+        addPreferencesFromResource(R.xml.preferences);
     }
 
 	@Override

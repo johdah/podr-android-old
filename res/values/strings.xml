@@ -39,6 +39,13 @@
     <string name="menu_settings">Settings</string>
     <string name="no_enclosure">No enclosure was found</string>
     <string name="no_summary">No summary was found</string>
+    <string name="pref_category_update_and_download">Update &amp; Download</string>
+    <string name="pref_summary_autodownload_limit">How many episodes should be downloaded automatically on update</string>
+    <string name="pref_summary_download_only_wifi">To reduce network provider data charges, don\'t download over mobile networks</string>
+    <string name="pref_summary_update_only_wifi">To reduce network provider data charges, don\'t update over mobile networks</string>
+    <string name="pref_title_autodownload_limit">Auto download limit</string>
+    <string name="pref_title_download_only_wifi">Download via Wi-Fi Only</string>
+    <string name="pref_title_update_only_wifi">Update via Wi-Fi Only</string>
     <string name="read">Read</string>
     <string name="remove_download">Remove download</string>
     <string name="remove_subscription">Remove subscription</string>
@@ -52,6 +59,7 @@
     <string name="title_episode_detail">Episode Detail</string>
     <string name="title_episode_list">Episodes</string>
     <string name="title_newsubscription">New Subscription</string>
+    <string name="title_settings">Settings</string>
     <string name="unknown">Unknown</string>
     <string name="unknown_date">Unknown date</string>
     <string name="unread">Unread</string>

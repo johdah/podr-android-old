@@ -126,10 +126,8 @@ public class MainActivity extends FragmentActivity implements
 			startActivity(intent);
 			return true;
 		case R.id.menu_settings:
-			/*intent = new Intent(this, SettingsActivity.class);
-			startActivity(intent);*/
-			Toast.makeText(this.getApplicationContext(),
-					"Not yet implemented", Toast.LENGTH_LONG).show();
+			intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
