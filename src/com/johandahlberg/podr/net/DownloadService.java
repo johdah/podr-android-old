@@ -6,7 +6,9 @@ import com.johandahlberg.podr.R;
 import com.johandahlberg.podr.data.Download;
 import com.johandahlberg.podr.data.PodrDataHandler;
 
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -16,11 +18,14 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.Process;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 public class DownloadService extends Service {
 	private static final String LOG_TAG = ".net.DownloadService";
+
 	private PodrDataHandler dataHandler;
+	private DownloadNotifyHelper notifyHelper;
 	private SharedPreferences sharedPref;
 	private List<Download> downloads;
 	private int initialDownloads = 0;
@@ -101,8 +106,15 @@ public class DownloadService extends Service {
 				Process.THREAD_PRIORITY_BACKGROUND);
 		dataHandler = new PodrDataHandler(getApplicationContext());
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		notifyHelper = DownloadNotifyHelper.getInstance(getApplicationContext());
+		notifyHelper.createNewNotification(
+				getString(R.string.download_episodes),
+				getString(R.string.download_inprogress));
 		
 		downloads = dataHandler.getDownloading();
+		notifyHelper.setContentText(getString(R.string.download_inprogress) + ": 0/" + downloads.size());
+		notifyHelper.notifyManager();
+		
 		boolean downloadRemoved = false;
 		int index = -1;
 		for(int i = 0; i < downloads.size(); i++) {
@@ -149,5 +161,8 @@ public class DownloadService extends Service {
 	}
 
 	@Override
-	public void onDestroy() {}
+	public void onDestroy() {
+		notifyHelper.setContentText(getString(R.string.download_completed));
+		notifyHelper.notifyManager();
+	}
 }

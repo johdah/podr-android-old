@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.johandahlberg.podr.R;
 import com.johandahlberg.podr.data.Download;
 import com.johandahlberg.podr.data.Episode;
 import com.johandahlberg.podr.data.PodrDataHandler;
@@ -22,17 +23,20 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 
 public class DownloadIntentService extends IntentService {
 	private static final String LOG_TAG = ".net.DownloadIntentService";
-	private NotificationManager notificationMgr = null;
+
 	private int id;
 	private int downloadId;
 	private int episodeId;
 	private String downloadProgress = "";
 	private PodrDataHandler dataHandler;
 	private PodrEpisodeHelper episodeHelper;
+	private DownloadNotifyHelper notifyHelper;
 	private final static String VALIDCHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 $%`-_@{}~!#().";
 
 	public DownloadIntentService() {
@@ -45,8 +49,7 @@ public class DownloadIntentService extends IntentService {
 		Bundle extras = intent.getExtras();
 		dataHandler = new PodrDataHandler(getApplicationContext());
 		episodeHelper = new PodrEpisodeHelper(getApplicationContext());
-		notificationMgr = (NotificationManager) getApplicationContext()
-				.getSystemService(NOTIFICATION_SERVICE);
+		notifyHelper = DownloadNotifyHelper.getInstance(getApplicationContext());
 		this.downloadProgress = intent.getStringExtra("downloadProgress");
 		this.id = intent.getIntExtra("id", -1);
 		this.downloadId = intent.getIntExtra("downloadId", -1);
@@ -80,25 +83,17 @@ public class DownloadIntentService extends IntentService {
 
 			int nextNotification = 0;
 
-			String contentTitle = downloadProgress + " "
-					+ subscription.getTitle();
-			/*notificationMgr.notify(
-					android.R.id.progress,
-					getSimple(contentTitle, episode.getTitle()).setProgress(
-							totalDownloadSize, 0, false).build());*/
+			notifyHelper.setContentText(subscription.getTitle() + " " + downloadProgress);
+			notifyHelper.setProgress(totalDownloadSize, 0, false);
+			notifyHelper.notifyManager();
 			
 			while ((bufferLength = inputStream.read(buffer)) > 0) {
 				fos.write(buffer, 0, bufferLength);
 				downloaded += bufferLength;
 
 				if (downloaded >= nextNotification) {
-					contentTitle = downloadProgress + " "
-							+ subscription.getTitle();
-					/*notificationMgr.notify(
-							android.R.id.progress,
-							getSimple(contentTitle, episode.getTitle())
-									.setProgress(totalDownloadSize, downloaded,
-											true).build());*/
+					notifyHelper.setProgress(totalDownloadSize, downloaded, false);
+					notifyHelper.notifyManager();
 					nextNotification += totalDownloadSize / 100;
 				}
 			}
@@ -109,12 +104,9 @@ public class DownloadIntentService extends IntentService {
 					Episode.STATUS_DOWNLOADED);
 			dataHandler.updateDownload(download);
 			
-			// Shouldn't be static
-			/*notificationMgr.notify(
-					android.R.id.progress,
-					getSimple(
-							"Finished downloading episode " + downloadProgress,
-							"").build());*/
+			notifyHelper.setProgress(0, 0, false);
+			notifyHelper.setContentText(getString(R.string.download_completed));
+			notifyHelper.notifyManager();
 		} catch (FileNotFoundException e) {
 			Log.e(LOG_TAG, "FileNotFoundException: " + e.toString());
 			e.printStackTrace();
@@ -182,18 +174,4 @@ public class DownloadIntentService extends IntentService {
 		}
 		return fixedName.toString();
 	}
-
-	/*private NotificationCompat2.Builder getSimple(CharSequence contentTitle,
-			CharSequence contentText) {
-		return new NotificationCompat2.Builder(this)
-				.setSmallIcon(R.drawable.ic_launcher).setTicker(contentTitle)
-				.setContentTitle(contentTitle).setContentText(contentText)
-		/* .setContentIntent(getPendingIntent()) *;
-	}*/
-
-	/*
-	 * private PendingIntent getPendingIntent() { Intent i = new Intent(this,
-	 * SampleActivity.class); i.setFlags(FLAG_ACTIVITY_CLEAR_TOP); return
-	 * PendingIntent.getActivity(this, 0, i, 0); }
-	 */
 }
