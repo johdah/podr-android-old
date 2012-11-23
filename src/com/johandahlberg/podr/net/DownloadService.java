@@ -11,6 +11,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -26,18 +28,18 @@ public class DownloadService extends Service {
 
 	private PodrDataHandler dataHandler;
 	private DownloadNotifyHelper notifyHelper;
+	private ConnectivityManager connMgr = null;
 	private SharedPreferences sharedPref;
 	private List<Download> downloads;
 	private int initialDownloads = 0;
+	
+	boolean downloadOnlyWifi = true;
 
 	private Handler downloadHandler = new Handler() {
 		public void handleMessage(Message message) {
 			Object path = message.obj;
 			Intent intent;
 			
-			// TODO: Implement only on wifi check
-			//boolean updateOnlyWifi = sharedPref.getBoolean("pref_key_update_only_wifi", true);
-
 			if (message.arg1 == -1) { // First
 				if (!downloads.isEmpty()) {
 					intent = new Intent(getApplicationContext(),
@@ -105,15 +107,11 @@ public class DownloadService extends Service {
 		HandlerThread thread = new HandlerThread("ServiceStartArguments",
 				Process.THREAD_PRIORITY_BACKGROUND);
 		dataHandler = new PodrDataHandler(getApplicationContext());
+		connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		notifyHelper = DownloadNotifyHelper.getInstance(getApplicationContext());
-		notifyHelper.createNewNotification(
-				getString(R.string.download_episodes),
-				getString(R.string.download_inprogress));
 		
 		downloads = dataHandler.getDownloading();
-		notifyHelper.setContentText(getString(R.string.download_inprogress) + ": 0/" + downloads.size());
-		notifyHelper.notifyManager();
 		
 		boolean downloadRemoved = false;
 		int index = -1;
@@ -130,6 +128,7 @@ public class DownloadService extends Service {
 		}
 		
 		initialDownloads = downloads.size();
+		downloadOnlyWifi = sharedPref.getBoolean("pref_key_download_only_wifi", true);
 		thread.start();
 
 		// Get the HandlerThread's Looper and use it for our Handler
@@ -142,13 +141,24 @@ public class DownloadService extends Service {
 		if (downloads.isEmpty()) {
 			stopSelf();
 		}
+		
+		NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
+		if(!downloadOnlyWifi || activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+			notifyHelper.createNewNotification(
+					getString(R.string.download_episodes),
+					getString(R.string.download_inprogress));
+			notifyHelper.setContentText(getString(R.string.download_inprogress) + ": 0/" + downloads.size());
+			notifyHelper.notifyManager();
 
-		// For each start request, send a message to start a job and deliver the
-		// start ID so we know which request we're stopping when we finish the
-		// job
-		Message msg = downloadHandler.obtainMessage();
-		msg.arg1 = -1;
-		downloadHandler.sendMessage(msg);
+			// For each start request, send a message to start a job and deliver the
+			// start ID so we know which request we're stopping when we finish the
+			// job
+			Message msg = downloadHandler.obtainMessage();
+			msg.arg1 = -1;
+			downloadHandler.sendMessage(msg);
+		} else {
+			stopSelf();
+		}
 
 		// If we get killed, after returning from here, restart
 		return START_STICKY;
@@ -162,7 +172,5 @@ public class DownloadService extends Service {
 
 	@Override
 	public void onDestroy() {
-		notifyHelper.setContentText(getString(R.string.download_completed));
-		notifyHelper.notifyManager();
 	}
 }

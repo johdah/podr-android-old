@@ -18,6 +18,7 @@
     <string name="download_completed">Download completed</string>
     <string name="download_episodes">Download episodes</string>
     <string name="download_inprogress">Download in progress</string>
+    <string name="download_lost_connection">Lost connection</string>
     <string name="duration">Duration</string>
     <string name="list_loading">Loading&#8230;</string>
     <string name="marked_all_read">Marked all episodes as read</string>

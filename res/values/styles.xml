@@ -1,9 +1,8 @@
 <resources>
 
-    <style name="AppTheme" parent="android:Theme" />
+    <!-- <style name="AppTheme" parent="android:Theme" /> -->
     
-    <!-- <style name="PodR.Light" parent="android:Theme.Light">
-    </style> -->
+    <style name="PodR.Light" parent="android:Theme.Light" />
 
     <style name="ListItemTitle">
         <item name="android:textColor">#ff000000</item>

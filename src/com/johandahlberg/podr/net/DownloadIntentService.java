@@ -18,11 +18,15 @@ import com.johandahlberg.podr.data.helpers.PodrEpisodeHelper;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.os.Messenger;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
@@ -37,6 +41,7 @@ public class DownloadIntentService extends IntentService {
 	private PodrDataHandler dataHandler;
 	private PodrEpisodeHelper episodeHelper;
 	private DownloadNotifyHelper notifyHelper;
+	private ConnectivityManager connMgr = null;
 	private final static String VALIDCHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 $%`-_@{}~!#().";
 
 	public DownloadIntentService() {
@@ -50,6 +55,12 @@ public class DownloadIntentService extends IntentService {
 		dataHandler = new PodrDataHandler(getApplicationContext());
 		episodeHelper = new PodrEpisodeHelper(getApplicationContext());
 		notifyHelper = DownloadNotifyHelper.getInstance(getApplicationContext());
+		boolean downloadOnlyWifi = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+				"pref_key_download_only_wifi", true);
+		
+		connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
+		
 		this.downloadProgress = intent.getStringExtra("downloadProgress");
 		this.id = intent.getIntExtra("id", -1);
 		this.downloadId = intent.getIntExtra("downloadId", -1);
@@ -63,6 +74,7 @@ public class DownloadIntentService extends IntentService {
 		Episode episode = episodeHelper.getEpisodeById(episodeId);
 		Subscription subscription = dataHandler.getSubscriptionById(episode
 				.getSubscriptionId());
+		boolean failed = false;
 
 		File output = this.generateFilePath(episode);
 		if (output.exists()) {
@@ -88,13 +100,18 @@ public class DownloadIntentService extends IntentService {
 			notifyHelper.notifyManager();
 			
 			while ((bufferLength = inputStream.read(buffer)) > 0) {
-				fos.write(buffer, 0, bufferLength);
-				downloaded += bufferLength;
-
-				if (downloaded >= nextNotification) {
-					notifyHelper.setProgress(totalDownloadSize, downloaded, false);
-					notifyHelper.notifyManager();
-					nextNotification += totalDownloadSize / 100;
+				if(!downloadOnlyWifi || activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+					fos.write(buffer, 0, bufferLength);
+					downloaded += bufferLength;
+	
+					if (downloaded >= nextNotification) {
+						notifyHelper.setProgress(totalDownloadSize, downloaded, false);
+						notifyHelper.notifyManager();
+						nextNotification += totalDownloadSize / 100;
+					}
+				} else {
+					failed = true;
+					break;
 				}
 			}
 
@@ -104,15 +121,14 @@ public class DownloadIntentService extends IntentService {
 					Episode.STATUS_DOWNLOADED);
 			dataHandler.updateDownload(download);
 			
-			notifyHelper.setProgress(0, 0, false);
-			notifyHelper.setContentText(getString(R.string.download_completed));
-			notifyHelper.notifyManager();
 		} catch (FileNotFoundException e) {
 			Log.e(LOG_TAG, "FileNotFoundException: " + e.toString());
 			e.printStackTrace();
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "Exception: " + e.toString());
 			e.printStackTrace();
+
+			failed = true;
 		} finally {
 			if (stream != null) {
 				try {
@@ -131,6 +147,14 @@ public class DownloadIntentService extends IntentService {
 				}
 			}
 		}
+
+		notifyHelper.setProgress(0, 0, false);
+		if(failed) {
+			notifyHelper.setContentText(getString(R.string.download_lost_connection));
+		} else {
+			notifyHelper.setContentText(getString(R.string.download_completed));
+		}
+		notifyHelper.notifyManager();
 
 		if (extras != null) {
 			Messenger messenger = (Messenger) extras.get("MESSENGER");
@@ -159,9 +183,16 @@ public class DownloadIntentService extends IntentService {
 		path = m.replaceAll("_");
 		File dir = new File(Environment.getExternalStorageDirectory(),
 				Environment.DIRECTORY_PODCASTS);
+		// If Podcast directory not exists, create it
+		if(!dir.exists()) {
+			new File(Environment.getExternalStorageDirectory(), Environment.DIRECTORY_PODCASTS).mkdir();
+		}
+		
+		// If Subscription directory not exists, create it
 		if (!new File(dir, folder).exists()) {
 			new File(dir, folder).mkdir();
 		}
+		
 		return new File(dir, path);
 	}
 

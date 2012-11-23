@@ -19,7 +19,6 @@ import com.johandahlberg.podr.data.PodrDataHandler;
 import com.johandahlberg.podr.data.PodrOpenHelper;
 import com.johandahlberg.podr.data.Subscription;
 import com.johandahlberg.podr.data.helpers.PodrEpisodeHelper;
-//import com.johandahlberg.podr.ui.SettingsActivity;
 
 import android.app.NotificationManager;
 import android.app.Service;
@@ -28,6 +27,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -38,18 +39,21 @@ import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 public class UpdateService extends Service {
 	private static final String LOG_TAG = ".net.UpdateService";
 
 	private NotificationManager mNotifyManager = null;
 	private NotificationCompat.Builder mBuilder = null;
+	private ConnectivityManager connMgr = null;
 	private SharedPreferences sharedPref;
 	private Looper mServiceLooper;
 	private ServiceHandler mServiceHandler;
 	private Context context;
+	
 	private int addedEpisodes = 0;
+	private int autodownloadLimit = 5;
+	private boolean updateOnlyWifi = true;
 
 	// Handler that receives messages from the thread
 	private final class ServiceHandler extends Handler {
@@ -69,75 +73,73 @@ public class UpdateService extends Service {
 			PodcastParser parser;
 			dataHandler = new PodrDataHandler(context);
 			episodeHelper = new PodrEpisodeHelper(context);
-
-			// TODO: Implement only on wifi check
-			/*boolean updateOnlyWifi = sharedPref.getBoolean(
-					"pref_key_update_only_wifi", true);*/
-			int autodownloadLimit = Integer.parseInt(sharedPref.getString(
-					"pref_key_autodownload_limit", "5"));
-
+			
 			try {
 				// Do work
 				String[] projection = { BaseColumns._ID,
 						PodrOpenHelper.SUBSCRIPTION_COL_LINK };
-
+	
 				ContentResolver cr = getContentResolver();
 				Cursor c = cr.query(
 						PodrContentProvider.SUBSCRIPTION_CONTENT_URI,
 						projection, null, null, null);
-
+				
+				NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
+	
 				// Loop through subscriptions
 				c.moveToFirst();
 				int count = 0;
 				do {
-					// Notification
-					mBuilder.setProgress(c.getCount(), count, false);
-					mBuilder.setContentText(getString(R.string.update_inprogress) + ": " + count + "/"
-							+ c.getCount());
-					mNotifyManager.notify(0, mBuilder.build());
-					
-					subscription = new Subscription(new URL(c.getString(1)));
-					subscription.set_id(c.getInt(0));
-
-					inputStream = downloadUrl(subscription.getLink());
-					if (inputStream != null) {
-						parser = new PodcastParser(context, subscription);
-						try {
-							parser.parse(inputStream);
-						} catch (XmlPullParserException e) {
-							Log.e(LOG_TAG, "XmlPullParserException: " + e.toString());
-						} catch (IOException e) {
-							Log.e(LOG_TAG, "IOException: " + e.toString());
-						}
-
-						dataHandler.updateSubscription(subscription);
-						List<Episode> episodes = parser.getEpisodes();
-						episodeHelper.addEpisodes(episodes);
-						Subscription updatedSubscription = dataHandler.getSubscriptionById(subscription.get_id());
-						if(updatedSubscription != null && updatedSubscription.isAutoDownload()) {
-							int updatedEpisodeCount = 0;
-							for (Episode episode : episodes) {
-								updatedEpisodeCount++;
-								if (updatedEpisodeCount > autodownloadLimit
-										&& autodownloadLimit != -1) {
-									break;
-								}
-								
-								Episode updatedEpisode = episodeHelper
-										.getEpisodeByGuid(episode.getGuid());
-								episodeHelper.updateEpisodeStatus(updatedEpisode.get_id(), Episode.STATUS_DOWNLOADING);
-								dataHandler.addDownload(new Download(-1, updatedEpisode.get_id(), updatedEpisode.getEnclosure()));
+					if(!updateOnlyWifi || activeNetwork.getType() == connMgr.TYPE_WIFI) {
+						// Notification
+						mBuilder.setProgress(c.getCount(), count, false);
+						mBuilder.setContentText(getString(R.string.update_inprogress) + ": " + count + "/"
+								+ c.getCount());
+						mNotifyManager.notify(0, mBuilder.build());
+						
+						subscription = new Subscription(new URL(c.getString(1)));
+						subscription.set_id(c.getInt(0));
+		
+						inputStream = downloadUrl(subscription.getLink());
+						if (inputStream != null) {
+							parser = new PodcastParser(context, subscription);
+							try {
+								parser.parse(inputStream);
+							} catch (XmlPullParserException e) {
+								Log.e(LOG_TAG, "XmlPullParserException: " + e.toString());
+							} catch (IOException e) {
+								Log.e(LOG_TAG, "IOException: " + e.toString());
 							}
+		
+							dataHandler.updateSubscription(subscription);
+							List<Episode> episodes = parser.getEpisodes();
+							episodeHelper.addEpisodes(episodes);
+							Subscription updatedSubscription = dataHandler.getSubscriptionById(subscription.get_id());
+							if(updatedSubscription != null && updatedSubscription.isAutoDownload()) {
+								int updatedEpisodeCount = 0;
+								for (Episode episode : episodes) {
+									updatedEpisodeCount++;
+									if (updatedEpisodeCount > autodownloadLimit
+											&& autodownloadLimit != -1) {
+										break;
+									}
+									
+									Episode updatedEpisode = episodeHelper
+											.getEpisodeByGuid(episode.getGuid());
+									episodeHelper.updateEpisodeStatus(updatedEpisode.get_id(), Episode.STATUS_DOWNLOADING);
+									dataHandler.addDownload(new Download(-1, updatedEpisode.get_id(), updatedEpisode.getEnclosure()));
+								}
+							}
+		
+							addedEpisodes += parser.getEpisodes().size();
 						}
-
-						addedEpisodes += parser.getEpisodes().size();
+						count++;
 					}
-					count++;
 				} while (c.moveToNext());
-
+	
 				c.close();
 			} catch (Exception e) {
-
+	
 			}
 			
             mBuilder.setContentText(getString(R.string.update_completed)).setProgress(0,0,false);
@@ -204,6 +206,7 @@ public class UpdateService extends Service {
 		thread.start();
 
 		context = getApplicationContext();
+		connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mBuilder = new NotificationCompat.Builder(this);
@@ -211,6 +214,11 @@ public class UpdateService extends Service {
 	    		.setContentText(getString(R.string.update_inprogress))
     			.setSmallIcon(R.drawable.ic_launcher);
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+		updateOnlyWifi = sharedPref.getBoolean(
+				"pref_key_update_only_wifi", true);
+		autodownloadLimit = Integer.parseInt(sharedPref.getString(
+				"pref_key_autodownload_limit", "5"));
 
 		// Get the HandlerThread's Looper and use it for our Handler
 		mServiceLooper = thread.getLooper();
