@@ -1,6 +1,7 @@
 package com.johandahlberg.podr.ui;
 
 import com.johandahlberg.podr.R;
+import com.johandahlberg.podr.utils.PodrBackupAgent;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +16,12 @@ public class SettingsActivity extends PreferenceActivity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         addPreferencesFromResource(R.xml.preferences);
     }
+	
+	@Override
+	public void onDestroy() {
+		PodrBackupAgent.requestBackup(this);
+		super.onDestroy();
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

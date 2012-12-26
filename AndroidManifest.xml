@@ -16,9 +16,13 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:allowBackup="false" >
+        android:allowBackup="true"
+        android:backupAgent=".utils.PodrBackupAgent"
+        android:restoreAnyVersion="true">
+        <meta-data android:name="com.google.android.backup.api_key"
+    		android:value="AEdPqrEAAAAI_9hHI1v11k3OBJOUL-Rmd13ufcwEQ-TeDpynQg" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.johandahlberg.podr.ui.MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
